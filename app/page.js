@@ -356,15 +356,6 @@ export default function Home() {
 
 function VideoCard({ video, admin, onPlay, onDelete }) {
   const [hover, setHover] = useState(false)
-  const vidRef = useRef(null)
-
-  useEffect(() => {
-    const vid = vidRef.current
-    if (!vid) return
-    const handleLoaded = () => { vid.currentTime = 0.5 }
-    vid.addEventListener('loadeddata', handleLoaded)
-    return () => vid.removeEventListener('loadeddata', handleLoaded)
-  }, [video.url])
 
   return (
     <div
@@ -387,11 +378,10 @@ function VideoCard({ video, admin, onPlay, onDelete }) {
         background: `linear-gradient(135deg, ${C.purpleSoft}, ${C.accentSoft})`,
       }}>
         <video
-          ref={vidRef}
-          src={video.url}
+          src={video.url + '#t=0.5'}
           muted
           playsInline
-          preload="metadata"
+          preload="auto"
           style={{
             width: '100%', height: '100%', objectFit: 'cover',
             display: 'block',
