@@ -356,40 +356,14 @@ export default function Home() {
 
 function VideoCard({ video, admin, onPlay, onDelete }) {
   const [hover, setHover] = useState(false)
-  const [thumb, setThumb] = useState(null)
-  const attempted = useRef(false)
+  const vidRef = useRef(null)
 
   useEffect(() => {
-    if (attempted.current) return
-    attempted.current = true
-
-    const vid = document.createElement('video')
-    vid.crossOrigin = 'anonymous'
-    vid.preload = 'metadata'
-    vid.muted = true
-    vid.playsInline = true
-    vid.src = video.url
-
-    vid.addEventListener('loadeddata', () => {
-      vid.currentTime = 1
-    })
-
-    vid.addEventListener('seeked', () => {
-      try {
-        const canvas = document.createElement('canvas')
-        canvas.width = vid.videoWidth
-        canvas.height = vid.videoHeight
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(vid, 0, 0)
-        setThumb(canvas.toDataURL('image/jpeg', 0.7))
-      } catch (e) {
-        // Cross-origin or other error -- fallback to gradient
-      }
-    })
-
-    vid.addEventListener('error', () => {
-      // Fallback to gradient
-    })
+    const vid = vidRef.current
+    if (!vid) return
+    const handleLoaded = () => { vid.currentTime = 0.5 }
+    vid.addEventListener('loadeddata', handleLoaded)
+    return () => vid.removeEventListener('loadeddata', handleLoaded)
   }, [video.url])
 
   return (
@@ -409,11 +383,20 @@ function VideoCard({ video, admin, onPlay, onDelete }) {
     >
       {/* Thumbnail area */}
       <div style={{
-        height: 140, position: 'relative', overflow: 'hidden',
-        background: thumb
-          ? `url(${thumb}) center/cover no-repeat`
-          : `linear-gradient(135deg, ${C.purpleSoft}, ${C.accentSoft})`,
+        height: 160, position: 'relative', overflow: 'hidden',
+        background: `linear-gradient(135deg, ${C.purpleSoft}, ${C.accentSoft})`,
       }}>
+        <video
+          ref={vidRef}
+          src={video.url}
+          muted
+          playsInline
+          preload="metadata"
+          style={{
+            width: '100%', height: '100%', objectFit: 'cover',
+            display: 'block',
+          }}
+        />
         {/* Play button overlay */}
         <div style={{
           position: 'absolute', inset: 0,
@@ -436,18 +419,6 @@ function VideoCard({ video, admin, onPlay, onDelete }) {
             </svg>
           </div>
         </div>
-
-        {/* Duration badge placeholder */}
-        {thumb && (
-          <div style={{
-            position: 'absolute', bottom: 8, right: 8,
-            background: 'rgba(0,0,0,0.6)', borderRadius: 6,
-            padding: '2px 6px', fontSize: 11, fontWeight: 500,
-            backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
-          }}>
-            VIDEO
-          </div>
-        )}
       </div>
 
       {/* Info */}
