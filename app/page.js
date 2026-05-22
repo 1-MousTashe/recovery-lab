@@ -9,12 +9,19 @@ const SECTIONS = [
   { id: 'lymph-flow', label: 'Lymph Flow' },
 ]
 
-const SAGE = '#5b7a5e'
-const SAGE_LIGHT = '#e8ede9'
-const CREAM = '#f8f6f1'
-const CHARCOAL = '#1a1a1a'
-const GRAY = '#8a8a8a'
-const WHITE = '#ffffff'
+const C = {
+  bg1: '#0f0a2e',
+  bg2: '#1a1145',
+  card: 'rgba(255,255,255,0.06)',
+  cardBorder: 'rgba(255,255,255,0.1)',
+  accent: '#ff4d6d',
+  accentSoft: 'rgba(255,77,109,0.15)',
+  purple: '#7c3aed',
+  purpleSoft: 'rgba(124,58,237,0.2)',
+  text: '#ffffff',
+  textDim: 'rgba(255,255,255,0.5)',
+  textMid: 'rgba(255,255,255,0.7)',
+}
 
 export default function Home() {
   const [section, setSection] = useState('rehabilitation')
@@ -134,14 +141,31 @@ export default function Home() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: CREAM }}>
+    <div style={{
+      minHeight: '100vh',
+      background: `linear-gradient(160deg, ${C.bg1} 0%, ${C.bg2} 50%, ${C.bg1} 100%)`,
+      color: C.text,
+    }}>
 
-      {/* Toast notification */}
+      {/* Background orbs */}
+      <div style={{
+        position: 'fixed', top: '-20%', right: '-10%', width: 400, height: 400,
+        borderRadius: '50%', background: 'rgba(124,58,237,0.08)', filter: 'blur(80px)',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'fixed', bottom: '-15%', left: '-10%', width: 350, height: 350,
+        borderRadius: '50%', background: 'rgba(255,77,109,0.06)', filter: 'blur(80px)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Toast */}
       {toast && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: CHARCOAL, color: WHITE, padding: '10px 22px', borderRadius: 8,
-          fontSize: 13, fontWeight: 500, zIndex: 999, boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          background: C.accent, color: C.text, padding: '10px 22px', borderRadius: 10,
+          fontSize: 13, fontWeight: 500, zIndex: 999,
+          boxShadow: '0 4px 24px rgba(255,77,109,0.3)',
           animation: 'toastIn 0.2s ease',
         }}>
           {toast}
@@ -151,14 +175,14 @@ export default function Home() {
       {/* Delete confirmation */}
       {delTarget && (
         <Overlay onClose={() => setDelTarget(null)}>
-          <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20, lineHeight: 1.5 }}>
+          <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20, lineHeight: 1.5, color: C.text }}>
             Delete <strong>{delTarget.name}</strong>? This cannot be undone.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-            <button onClick={() => setDelTarget(null)} style={btnStyle('transparent', CHARCOAL)}>
+            <button onClick={() => setDelTarget(null)} style={btnStyle('rgba(255,255,255,0.08)', C.textMid)}>
               Cancel
             </button>
-            <button onClick={() => deleteVideo(delTarget)} style={btnStyle('#c0392b', WHITE)}>
+            <button onClick={() => deleteVideo(delTarget)} style={btnStyle(C.accent, C.text)}>
               Delete
             </button>
           </div>
@@ -169,30 +193,24 @@ export default function Home() {
       {player && (
         <div
           style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', zIndex: 800,
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 800,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             padding: 20, animation: 'fadeIn 0.15s ease',
           }}
           onClick={() => setPlayer(null)}
         >
-          <div
-            style={{ maxWidth: 840, width: '100%' }}
-            onClick={e => e.stopPropagation()}
-          >
+          <div style={{ maxWidth: 840, width: '100%' }} onClick={e => e.stopPropagation()}>
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12,
             }}>
-              <p style={{ color: WHITE, fontSize: 15, fontWeight: 600, margin: 0 }}>
+              <p style={{ color: C.text, fontSize: 15, fontWeight: 600, margin: 0 }}>
                 {player.name}
               </p>
-              <button
-                onClick={() => setPlayer(null)}
-                style={{
-                  background: 'rgba(255,255,255,0.1)', border: 'none', color: WHITE,
-                  width: 32, height: 32, borderRadius: 8, fontSize: 16,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
+              <button onClick={() => setPlayer(null)} style={{
+                background: 'rgba(255,255,255,0.1)', border: 'none', color: C.text,
+                width: 32, height: 32, borderRadius: 8, fontSize: 16,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
@@ -203,27 +221,20 @@ export default function Home() {
               controls
               autoPlay
               playsInline
-              style={{ width: '100%', borderRadius: 10, background: '#000', maxHeight: '75vh' }}
+              style={{ width: '100%', borderRadius: 12, background: '#000', maxHeight: '75vh' }}
               src={player.url}
             />
-            {/* Quick nav for other videos in this section */}
             {videos.length > 1 && (
               <div style={{
-                display: 'flex', gap: 6, marginTop: 14, overflowX: 'auto',
-                paddingBottom: 4,
+                display: 'flex', gap: 6, marginTop: 14, overflowX: 'auto', paddingBottom: 4,
               }}>
                 {videos.map(v => (
-                  <button
-                    key={v.id}
-                    onClick={() => setPlayer(v)}
-                    style={{
-                      flexShrink: 0, padding: '7px 14px', borderRadius: 6,
-                      border: 'none', fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                      background: v.id === player.id ? SAGE : 'rgba(255,255,255,0.1)',
-                      color: WHITE, fontFamily: 'inherit',
-                      transition: 'background 0.15s',
-                    }}
-                  >
+                  <button key={v.id} onClick={() => setPlayer(v)} style={{
+                    flexShrink: 0, padding: '7px 14px', borderRadius: 8,
+                    border: 'none', fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                    background: v.id === player.id ? C.accent : 'rgba(255,255,255,0.08)',
+                    color: C.text, fontFamily: 'inherit', transition: 'background 0.15s',
+                  }}>
                     {v.name}
                   </button>
                 ))}
@@ -237,67 +248,68 @@ export default function Home() {
       <header style={{
         padding: '16px 20px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        borderBottom: `1px solid ${SAGE_LIGHT}`,
-        background: WHITE, position: 'sticky', top: 0, zIndex: 100,
+        borderBottom: `1px solid ${C.cardBorder}`,
+        background: 'rgba(15,10,46,0.8)',
+        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        position: 'sticky', top: 0, zIndex: 100,
       }}>
         <h1 style={{ fontSize: 18, fontWeight: 600, letterSpacing: '-0.02em', margin: 0 }}>
           Recovery Lab
         </h1>
         <button onClick={toggleAdmin} style={{
-          background: admin ? SAGE : SAGE_LIGHT,
-          color: admin ? WHITE : GRAY,
-          border: 'none', borderRadius: 20, padding: '6px 14px',
+          background: admin ? C.accent : 'rgba(255,255,255,0.08)',
+          color: admin ? C.text : C.textMid,
+          border: `1px solid ${admin ? 'transparent' : C.cardBorder}`,
+          borderRadius: 20, padding: '6px 14px',
           fontSize: 12, fontWeight: 500, cursor: 'pointer',
           transition: 'all 0.2s', fontFamily: 'inherit',
+          boxShadow: admin ? '0 2px 12px rgba(255,77,109,0.3)' : 'none',
         }}>
           {admin ? 'Admin' : 'Manage'}
         </button>
       </header>
 
       {/* Main content */}
-      <main style={{ maxWidth: 760, margin: '0 auto', padding: '20px 16px 80px' }}>
+      <main style={{ maxWidth: 760, margin: '0 auto', padding: '20px 16px 80px', position: 'relative' }}>
 
-        {/* Section toggle tabs */}
+        {/* Section toggle */}
         <div style={{
           display: 'flex', gap: 4, marginBottom: 28,
-          background: WHITE, borderRadius: 10, padding: 4,
-          border: `1px solid ${SAGE_LIGHT}`,
+          background: C.card, borderRadius: 12, padding: 4,
+          border: `1px solid ${C.cardBorder}`,
+          backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
         }}>
           {SECTIONS.map(s => (
-            <button
-              key={s.id}
-              onClick={() => setSection(s.id)}
-              style={{
-                flex: 1, padding: '11px 8px', borderRadius: 8, border: 'none',
-                background: section === s.id ? SAGE : 'transparent',
-                color: section === s.id ? WHITE : GRAY,
-                fontSize: 13, fontWeight: 500, cursor: 'pointer',
-                transition: 'all 0.2s', fontFamily: 'inherit',
-              }}
-            >
+            <button key={s.id} onClick={() => setSection(s.id)} style={{
+              flex: 1, padding: '11px 8px', borderRadius: 10, border: 'none',
+              background: section === s.id
+                ? 'linear-gradient(135deg, ' + C.accent + ', ' + C.purple + ')'
+                : 'transparent',
+              color: section === s.id ? C.text : C.textDim,
+              fontSize: 13, fontWeight: section === s.id ? 600 : 500,
+              cursor: 'pointer', transition: 'all 0.25s', fontFamily: 'inherit',
+              boxShadow: section === s.id ? '0 2px 12px rgba(255,77,109,0.25)' : 'none',
+            }}>
               {s.label}
             </button>
           ))}
         </div>
 
-        {/* Upload button (admin only) */}
+        {/* Upload (admin) */}
         {admin && (
           <div style={{ marginBottom: 24 }}>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="video/*"
-              onChange={handleUpload}
-              style={{ display: 'none' }}
-            />
+            <input ref={fileRef} type="file" accept="video/*" onChange={handleUpload} style={{ display: 'none' }} />
             <button
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
               style={{
-                ...btnStyle(SAGE, WHITE),
                 width: '100%', padding: '14px 20px', fontSize: 14,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 opacity: uploading ? 0.6 : 1, fontFamily: 'inherit',
+                background: 'linear-gradient(135deg, ' + C.accent + ', ' + C.purple + ')',
+                color: C.text, border: 'none', borderRadius: 12,
+                fontWeight: 600, cursor: 'pointer', transition: 'opacity 0.15s',
+                boxShadow: '0 4px 20px rgba(255,77,109,0.25)',
               }}
             >
               {uploading ? progress : (
@@ -314,7 +326,7 @@ export default function Home() {
 
         {/* Video grid */}
         {loading ? (
-          <p style={{ textAlign: 'center', color: GRAY, fontSize: 14, padding: 48 }}>
+          <p style={{ textAlign: 'center', color: C.textDim, fontSize: 14, padding: 48 }}>
             Loading...
           </p>
         ) : videos.length === 0 ? (
@@ -322,8 +334,8 @@ export default function Home() {
         ) : (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-            gap: 12,
+            gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
+            gap: 14,
           }}>
             {videos.map(v => (
               <VideoCard
@@ -344,6 +356,41 @@ export default function Home() {
 
 function VideoCard({ video, admin, onPlay, onDelete }) {
   const [hover, setHover] = useState(false)
+  const [thumb, setThumb] = useState(null)
+  const attempted = useRef(false)
+
+  useEffect(() => {
+    if (attempted.current) return
+    attempted.current = true
+
+    const vid = document.createElement('video')
+    vid.crossOrigin = 'anonymous'
+    vid.preload = 'metadata'
+    vid.muted = true
+    vid.playsInline = true
+    vid.src = video.url
+
+    vid.addEventListener('loadeddata', () => {
+      vid.currentTime = 1
+    })
+
+    vid.addEventListener('seeked', () => {
+      try {
+        const canvas = document.createElement('canvas')
+        canvas.width = vid.videoWidth
+        canvas.height = vid.videoHeight
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(vid, 0, 0)
+        setThumb(canvas.toDataURL('image/jpeg', 0.7))
+      } catch (e) {
+        // Cross-origin or other error -- fallback to gradient
+      }
+    })
+
+    vid.addEventListener('error', () => {
+      // Fallback to gradient
+    })
+  }, [video.url])
 
   return (
     <div
@@ -351,37 +398,65 @@ function VideoCard({ video, admin, onPlay, onDelete }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        background: WHITE, borderRadius: 10, overflow: 'hidden', cursor: 'pointer',
-        border: `1px solid ${SAGE_LIGHT}`,
-        boxShadow: hover ? '0 4px 16px rgba(0,0,0,0.06)' : 'none',
-        transform: hover ? 'translateY(-1px)' : 'none',
-        transition: 'box-shadow 0.2s, transform 0.15s',
+        background: C.card,
+        borderRadius: 14, overflow: 'hidden', cursor: 'pointer',
+        border: `1px solid ${hover ? 'rgba(255,77,109,0.3)' : C.cardBorder}`,
+        boxShadow: hover ? '0 8px 32px rgba(255,77,109,0.12)' : 'none',
+        transform: hover ? 'translateY(-2px)' : 'none',
+        transition: 'all 0.25s ease',
+        backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
       }}
     >
+      {/* Thumbnail area */}
       <div style={{
-        height: 120,
-        background: `linear-gradient(135deg, ${SAGE_LIGHT}, #d4ddd5)`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: 140, position: 'relative', overflow: 'hidden',
+        background: thumb
+          ? `url(${thumb}) center/cover no-repeat`
+          : `linear-gradient(135deg, ${C.purpleSoft}, ${C.accentSoft})`,
       }}>
+        {/* Play button overlay */}
         <div style={{
-          width: 44, height: 44, borderRadius: '50%',
-          background: 'rgba(255,255,255,0.85)',
+          position: 'absolute', inset: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          transform: hover ? 'scale(1.08)' : 'scale(1)',
-          transition: 'transform 0.2s',
+          background: hover ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.15)',
+          transition: 'background 0.25s',
         }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill={SAGE} stroke="none">
-            <polygon points="6 3 20 12 6 21" />
-          </svg>
+          <div style={{
+            width: 44, height: 44, borderRadius: '50%',
+            background: hover ? C.accent : 'rgba(255,255,255,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            transform: hover ? 'scale(1.1)' : 'scale(1)',
+            transition: 'all 0.25s',
+            boxShadow: hover ? '0 4px 16px rgba(255,77,109,0.4)' : 'none',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={C.text} stroke="none">
+              <polygon points="7 3 21 12 7 21" />
+            </svg>
+          </div>
         </div>
+
+        {/* Duration badge placeholder */}
+        {thumb && (
+          <div style={{
+            position: 'absolute', bottom: 8, right: 8,
+            background: 'rgba(0,0,0,0.6)', borderRadius: 6,
+            padding: '2px 6px', fontSize: 11, fontWeight: 500,
+            backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+          }}>
+            VIDEO
+          </div>
+        )}
       </div>
+
+      {/* Info */}
       <div style={{
-        padding: '10px 12px',
+        padding: '12px 14px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <p style={{
-          fontSize: 13, fontWeight: 500, margin: 0,
+          fontSize: 13, fontWeight: 500, margin: 0, color: C.text,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           maxWidth: admin ? '75%' : '100%',
         }}>
@@ -391,11 +466,13 @@ function VideoCard({ video, admin, onPlay, onDelete }) {
           <button
             onClick={e => { e.stopPropagation(); onDelete() }}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              padding: 2, color: GRAY,
+              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: 6, cursor: 'pointer', padding: '4px 6px',
+              color: C.textDim, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.15s',
             }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H7a1 1 0 01-1-1V6h14" />
             </svg>
           </button>
@@ -409,15 +486,18 @@ function VideoCard({ video, admin, onPlay, onDelete }) {
 function EmptyState({ admin }) {
   return (
     <div style={{ textAlign: 'center', padding: '56px 20px' }}>
-      <svg
-        width="40" height="40" viewBox="0 0 24 24" fill="none"
-        stroke={GRAY} strokeWidth="1.5"
-        style={{ opacity: 0.3, marginBottom: 12 }}
-      >
-        <polygon points="23 7 16 12 23 17 23 7" />
-        <rect x="1" y="5" width="15" height="14" rx="2" />
-      </svg>
-      <p style={{ color: GRAY, fontSize: 14 }}>
+      <div style={{
+        width: 64, height: 64, borderRadius: 16,
+        background: C.card, border: `1px solid ${C.cardBorder}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        margin: '0 auto 16px',
+      }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={C.textDim} strokeWidth="1.5">
+          <polygon points="23 7 16 12 23 17 23 7" />
+          <rect x="1" y="5" width="15" height="14" rx="2" />
+        </svg>
+      </div>
+      <p style={{ color: C.textDim, fontSize: 14, lineHeight: 1.6 }}>
         {admin ? 'No videos yet -- upload one above' : 'No videos in this section'}
       </p>
     </div>
@@ -429,7 +509,7 @@ function Overlay({ onClose, children }) {
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 900,
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 900,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         animation: 'fadeIn 0.15s ease',
       }}
@@ -437,9 +517,12 @@ function Overlay({ onClose, children }) {
     >
       <div
         style={{
-          background: WHITE, borderRadius: 12, padding: 28,
+          background: C.bg2,
+          border: `1px solid ${C.cardBorder}`,
+          borderRadius: 16, padding: 28,
           maxWidth: 360, width: '90%',
-          boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
+          backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
         }}
         onClick={e => e.stopPropagation()}
       >
@@ -452,15 +535,10 @@ function Overlay({ onClose, children }) {
 
 function btnStyle(bg, color) {
   return {
-    background: bg,
-    color: color,
-    border: bg === 'transparent' ? '1px solid #ddd' : 'none',
-    borderRadius: 8,
-    padding: '8px 16px',
-    fontSize: 13,
-    fontWeight: 500,
-    cursor: 'pointer',
-    transition: 'opacity 0.15s',
-    fontFamily: "'Outfit', sans-serif",
+    background: bg, color: color,
+    border: bg.includes('rgba') ? `1px solid ${C.cardBorder}` : 'none',
+    borderRadius: 10, padding: '8px 16px',
+    fontSize: 13, fontWeight: 500, cursor: 'pointer',
+    transition: 'opacity 0.15s', fontFamily: "'Outfit', sans-serif",
   }
 }
